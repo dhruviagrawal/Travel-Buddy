@@ -1,9 +1,18 @@
+/**
+ * AppState manages the global application data, including quiz answers,
+ * recommended cities, and the final generated itinerary.
+ */
 export class AppState {
     constructor() {
+        /** @type {Object} Stores user answers keyed by question ID */
         this.answers = {};
+        /** @type {number} Current quiz question index */
         this.currentQuestionIndex = 0;
+        /** @type {Array} List of cities recommended by AI */
         this.recommendedCities = [];
+        /** @type {string|null} The city selected for the itinerary */
         this.selectedCity = null;
+        /** @type {Object|null} The final generated 3-day itinerary */
         this.itinerary = null;
         
         // Static data

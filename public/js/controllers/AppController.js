@@ -2,13 +2,22 @@ import { AppState } from '../models/AppState.js';
 import { ApiService } from '../services/ApiService.js';
 import { UIManager } from '../views/UIManager.js';
 
+/**
+ * AppController acts as the orchestrator, connecting the Model (AppState),
+ * View (UIManager), and Service (ApiService) layers.
+ */
 export class AppController {
     constructor() {
+        /** @type {AppState} */
         this.state = new AppState();
+        /** @type {UIManager} */
         this.ui = new UIManager();
         this.bindEvents();
     }
 
+    /**
+     * Attaches main UI events to the controller logic.
+     */
     bindEvents() {
         document.getElementById('start-btn').addEventListener('click', () => this.startQuiz());
         document.getElementById('restart-btn').addEventListener('click', () => this.restartApp());

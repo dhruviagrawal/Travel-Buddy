@@ -1,7 +1,11 @@
 import { ApiService } from '../services/ApiService.js';
 
+/**
+ * UIManager handles all DOM manipulations, view switching, and map rendering.
+ */
 export class UIManager {
     constructor() {
+        /** @type {Object} References to main container elements */
         this.views = {
             landing: document.getElementById('landing'),
             quiz: document.getElementById('quiz'),
@@ -9,10 +13,16 @@ export class UIManager {
             citySelection: document.getElementById('citySelection'),
             result: document.getElementById('result')
         };
+        /** @type {google.maps.Map|null} The active Google Map instance */
         this.mapInstance = null;
+        /** @type {Array} Current markers displayed on the map */
         this.markers = [];
     }
 
+    /**
+     * Switches the visible view by toggling 'active' classes.
+     * @param {string} viewName - The key name of the view to show.
+     */
     switchView(viewName) {
         Object.values(this.views).forEach(v => v.classList.remove('active'));
         if (this.views[viewName]) {
