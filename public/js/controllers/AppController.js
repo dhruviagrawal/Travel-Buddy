@@ -54,7 +54,7 @@ export class AppController {
         const itinerary = await ApiService.fetchItinerary(this.state.answers, cityName);
         this.state.itinerary = itinerary;
         
-        await this.ui.renderItinerary(itinerary);
+        await this.ui.renderItinerary(itinerary, () => this.startItineraryPhase(cityName));
     }
 
     restartApp() {

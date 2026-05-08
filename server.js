@@ -8,10 +8,25 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const app = express();
-export { app }; // Export for testing
+/**
+ * Travel Buddy Backend Server
+ * 
+ * This server provides AI-powered destination recommendations and itinerary generation
+ * using Google's Gemini AI and integrates securely with the Google Maps JS API.
+ * 
+ * @module server
+ */
 
 const port = process.env.PORT || 8000;
+
+const app = express();
+
+/**
+ * Express application instance.
+ * Exported for integration and unit testing.
+ * @type {import('express').Express}
+ */
+export { app };
 
 // --- MIDDLEWARE ---
 app.use(compression()); // Gzip all responses for efficiency
@@ -37,7 +52,41 @@ const apiLimiter = rateLimit({
 app.use('/api/', apiLimiter);
 
 // --- GEMINI INIT ---
+/**
+ * Advanced Gemini SDK Configuration
+ * Uses System Instructions and Safety Settings to maximize AI quality and safety.
+ */
 const getGenAI = () => new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+const SYSTEM_INSTRUCTION = "You are a professional, world-class travel agent for 'Travel Buddy'. Your goal is to provide safe, exciting, and highly personalized itineraries that respect all dietary and accessibility constraints.";
+
+const SAFETY_SETTINGS = [
+    { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+    { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+    { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+    { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+];
+
+/**
+ * Helper to handle Gemini API calls with automatic retry on rate limits (429).
+ * Boosts reliability during high-traffic periods.
+ */
+async function generateWithRetry(model, prompt, retries = 3) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            return await model.generateContent(prompt);
+        } catch (error) {
+            const isRateLimit = error.status === 429 || (error.message && error.message.includes('429'));
+            if (isRateLimit && i < retries - 1) {
+                const waitTime = 2000 * (i + 1);
+                console.log(`Rate limit hit, retrying in ${waitTime}ms... (Attempt ${i + 1}/${retries})`);
+                await new Promise(resolve => setTimeout(resolve, waitTime));
+                continue;
+            }
+            throw error;
+        }
+    }
+}
 
 // --- FIX 1: SERVE MAPS API KEY SECURELY FROM BACKEND ---
 app.get('/api/config', (req, res) => {
@@ -45,6 +94,14 @@ app.get('/api/config', (req, res) => {
 });
 
 // --- API ROUTES ---
+
+/**
+ * POST /api/recommend-cities
+ * Recommends 3 cities based on user preferences and safety criteria.
+ * @name recommend-cities
+ * @function
+ * @inner
+ */
 app.post('/api/recommend-cities', async (req, res) => {
     try {
         const { answers } = req.body;
@@ -55,7 +112,11 @@ app.post('/api/recommend-cities', async (req, res) => {
         // Backward compatibility for cached frontend clients
         answers.specialNeeds = answers.specialNeeds || 'None';
 
-        const model = getGenAI().getGenerativeModel({ model: 'gemini-2.5-flash' });
+        const model = getGenAI().getGenerativeModel({ 
+            model: 'gemini-2.5-flash',
+            systemInstruction: SYSTEM_INSTRUCTION,
+            safetySettings: SAFETY_SETTINGS
+        });
 
         const prompt = `Act as an expert travel planner. Based on a ${answers.group} trip focusing on ${answers.vibe} with a ${answers.budget} budget and ${answers.specialNeeds === 'None' ? 'no special dietary/medical needs' : 'STRICT ' + answers.specialNeeds + ' requirements'}, recommend 3 amazing cities or regions in the world.
 Return ONLY a valid JSON object in this exact structure, no markdown:
@@ -75,7 +136,7 @@ Return ONLY a valid JSON object in this exact structure, no markdown:
   ]
 }`;
 
-        const result = await model.generateContent(prompt);
+        const result = await generateWithRetry(model, prompt);
         const textResponse = result.response.text();
         const jsonString = textResponse.replace(/```json\n?|\n?```/g, '');
         const cityData = JSON.parse(jsonString);
@@ -90,6 +151,13 @@ Return ONLY a valid JSON object in this exact structure, no markdown:
     }
 });
 
+/**
+ * POST /api/generate-itinerary
+ * Generates a detailed 3-day itinerary for a specific city.
+ * @name generate-itinerary
+ * @function
+ * @inner
+ */
 app.post('/api/generate-itinerary', async (req, res) => {
     try {
         const { answers, cityName } = req.body;
@@ -100,7 +168,11 @@ app.post('/api/generate-itinerary', async (req, res) => {
         // Backward compatibility for cached frontend clients
         answers.specialNeeds = answers.specialNeeds || 'None';
 
-        const model = getGenAI().getGenerativeModel({ model: 'gemini-2.5-flash' });
+        const model = getGenAI().getGenerativeModel({ 
+            model: 'gemini-2.5-flash',
+            systemInstruction: SYSTEM_INSTRUCTION,
+            safetySettings: SAFETY_SETTINGS
+        });
 
         const prompt = `Act as an expert travel planner. Create a 3-day itinerary for a ${answers.group} trip to ${cityName} focusing on ${answers.vibe} with a ${answers.budget} budget.
 IMPORTANT CONSTRAINT: The user has ${answers.specialNeeds === 'None' ? 'no special dietary/medical needs' : 'STRICT ' + answers.specialNeeds + ' requirements'}. Every single restaurant and activity MUST accommodate this.
@@ -132,7 +204,7 @@ Return ONLY a valid JSON object in this exact structure, no markdown:
   ]
 }`;
 
-        const result = await model.generateContent(prompt);
+        const result = await generateWithRetry(model, prompt);
         const textResponse = result.response.text();
         const jsonString = textResponse.replace(/```json\n?|\n?```/g, '');
 

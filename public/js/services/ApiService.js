@@ -1,6 +1,14 @@
 import { CONFIG } from '../config.js';
 
+/**
+ * Service to handle all API communications with the backend.
+ */
 export class ApiService {
+    /**
+     * Fetches 3 city recommendations based on user answers.
+     * @param {Object} answers - User's quiz answers.
+     * @returns {Promise<Array>} List of city objects.
+     */
     static async fetchCityRecommendations(answers) {
         try {
             // Securely call our own backend instead of exposing the API key
@@ -23,6 +31,12 @@ export class ApiService {
         }
     }
 
+    /**
+     * Generates a full 3-day itinerary for a chosen city.
+     * @param {Object} answers - User's quiz answers.
+     * @param {string} cityName - Name of the city to plan for.
+     * @returns {Promise<Object|null>} Itinerary object or null on failure.
+     */
     static async fetchItinerary(answers, cityName) {
         try {
             const response = await fetch('/api/generate-itinerary', {
@@ -44,6 +58,11 @@ export class ApiService {
         }
     }
 
+    /**
+     * Fetches a relevant image from Wikimedia Commons with a fallback to Picsum.
+     * @param {string} keyword - Search term for the image.
+     * @returns {Promise<string>} Image URL.
+     */
     static async fetchImage(keyword) {
         try {
             // Use Wikimedia Commons API for real, cloud-hosted photos based on the location/keyword

@@ -133,7 +133,10 @@ export class UIManager {
                 <h3 class="city-name">${city.name}</h3>
                 ${safetyHtml}
                 <p class="city-reason">${city.reason}</p>
-                <button class="btn-select-city" aria-label="Plan Trip Here">Plan Trip Here</button>
+                <div class="card-actions">
+                    <button class="btn-select-city" aria-label="Plan Trip Here">Plan Trip Here</button>
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(city.name)}" target="_blank" class="maps-link">View on Google Maps</a>
+                </div>
             `;
             
             card.addEventListener('mouseenter', () => {
@@ -156,9 +159,17 @@ export class UIManager {
         }
     }
 
-    async renderItinerary(data) {
+    async renderItinerary(data, retryFn) {
         if (!data) {
-            document.getElementById('itinerary-title').textContent = "Failed to generate itinerary. Please try again.";
+            document.getElementById('itinerary-title').textContent = "Temporary Traffic Limit. Please wait 10 seconds and try again.";
+            const container = document.getElementById('itinerary-content');
+            container.innerHTML = `
+                <div class="retry-container">
+                    <p>Google's AI is experiencing high demand right now. We've optimized the app to handle this, but you may need to try one more time.</p>
+                    <button id="btn-retry-itinerary" class="btn-select-city">Retry Generation</button>
+                </div>
+            `;
+            document.getElementById('btn-retry-itinerary').addEventListener('click', retryFn);
             this.switchView('result');
             return;
         }
@@ -178,7 +189,12 @@ export class UIManager {
                     <h3 class="day-title">Day ${day.day}: ${day.theme}</h3>
                     <p class="day-desc">${day.description}</p>
                     <ul class="activity-list">
-                        ${day.activities.map(act => `<li>${act}</li>`).join('')}
+                        ${day.activities.map(act => `
+                            <li>
+                                ${act} 
+                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(act + ' ' + data.title)}" target="_blank" class="maps-mini-link" title="Open in Google Maps">📍</a>
+                            </li>
+                        `).join('')}
                     </ul>
                 </div>
             `;

@@ -12,7 +12,10 @@ It utilizes the **Gemini 2.5 Flash** model to recommend real-world destinations 
 - **Safety Mode for Solo/Marginalized Travelers**: Each recommended city is evaluated by Gemini for safety, generating a custom safety score (0-100) and an actionable safety highlight displayed as a glowing badge.
 - **Medical & Dietary Travel Guard**: Every itinerary dynamically adapts to strict dietary (Vegan, Halal, Jain) and medical (Wheelchair Accessible) requirements. Every generated restaurant and activity will respect these constraints.
 - **Dynamic Itineraries**: Generates a custom 3-day itinerary for any of the recommended cities, complete with daily themes, descriptions, and activities.
-- **Interactive Map Integration**: Automatically places markers for the recommended cities using the official Google Maps JS API.
+- **Deep Google Maps Integration**: Every recommendation and activity now includes direct deep-links to Google Maps for instant navigation and location discovery.
+- **Advanced Gemini Configuration**: Utilizes Gemini SDK advanced features including **System Instructions** and custom **Safety Settings** to ensure high-quality, professional travel advice.
+- **Production-Grade Reliability**: Implemented **Automated Retry Logic** with exponential backoff on the backend to gracefully handle API rate limits and high demand.
+- **Resilient UX**: Added a smart **Retry System** in the UI that detects traffic spikes and provides users with an easy way to regenerate their itineraries without restarting the quiz.
 - **Real Destination Photos**: Uses the Wikimedia Commons API to fetch actual, real-world photos of the locations in the itinerary—no static placeholders!
 - **Accessibility (a11y) First**: Built with semantic HTML, ARIA attributes (`aria-live`, `aria-label`), and keyboard navigable elements.
 - **Responsive & Modern UI**: A sleek, dark-mode inspired glassmorphism design that looks incredible on both mobile and desktop.
