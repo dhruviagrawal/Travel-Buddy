@@ -42,7 +42,26 @@ export class ApiService {
     }
 
     static async fetchImage(keyword) {
-        // Use Picsum Photos with keyword as seed — free, no API key, unique image per keyword
+        try {
+            // Use Wikimedia Commons API for real, cloud-hosted photos based on the location/keyword
+            const encodedKeyword = encodeURIComponent(keyword || 'travel');
+            const url = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodedKeyword}&gsrlimit=1&prop=pageimages&piprop=original&format=json&origin=*`;
+            
+            const response = await fetch(url);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.query && data.query.pages) {
+                    const pages = Object.values(data.query.pages);
+                    if (pages.length > 0 && pages[0].original && pages[0].original.source) {
+                        return pages[0].original.source;
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn("Wikimedia image fetch failed:", error);
+        }
+
+        // Fallback if Wikipedia doesn't have a photo for that specific keyword
         const seed = encodeURIComponent((keyword || 'travel').toLowerCase().replace(/\s+/g, '-'));
         return `https://picsum.photos/seed/${seed}/800/500`;
     }

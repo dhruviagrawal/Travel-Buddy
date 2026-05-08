@@ -114,8 +114,24 @@ export class UIManager {
             card.className = 'city-card';
             card.tabIndex = 0; // Keyboard accessibility
             card.setAttribute('aria-label', `Select ${city.name}`);
+            let safetyHtml = '';
+            if (city.safety) {
+                let badgeClass = 'safety-green';
+                let icon = '✅';
+                if (city.safety.score < 50) { badgeClass = 'safety-red'; icon = '🔴'; }
+                else if (city.safety.score < 75) { badgeClass = 'safety-yellow'; icon = '⚠️'; }
+                
+                safetyHtml = `
+                    <div class="safety-panel ${badgeClass}">
+                        <div class="safety-score">Safety: ${city.safety.score}/100</div>
+                        <div class="safety-highlight">${icon} ${city.safety.highlight}</div>
+                    </div>
+                `;
+            }
+
             card.innerHTML = `
                 <h3 class="city-name">${city.name}</h3>
+                ${safetyHtml}
                 <p class="city-reason">${city.reason}</p>
                 <button class="btn-select-city" aria-label="Plan Trip Here">Plan Trip Here</button>
             `;

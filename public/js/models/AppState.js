@@ -22,6 +22,11 @@ export class AppState {
                 id: "budget",
                 text: "What's your budget style?",
                 options: ["Backpacker (Budget)", "Comfort (Moderate)", "Luxury"]
+            },
+            {
+                id: "specialNeeds",
+                text: "Any dietary or special needs?",
+                options: ["None", "Vegetarian", "Vegan", "Halal", "Jain", "Gluten-Free", "Wheelchair Accessible"]
             }
         ];
     }

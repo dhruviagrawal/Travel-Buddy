@@ -13,9 +13,9 @@ test('AppState: initializes with correct default values', () => {
     assert.strictEqual(state.itinerary, null);
 });
 
-test('AppState: has 3 questions defined', () => {
+test('AppState: has 4 questions defined', () => {
     const state = new AppState();
-    assert.strictEqual(state.questions.length, 3);
+    assert.strictEqual(state.questions.length, 4);
 });
 
 test('AppState: setAnswer stores the answer correctly', () => {

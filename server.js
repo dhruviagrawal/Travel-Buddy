@@ -47,13 +47,13 @@ app.get('/api/config', (req, res) => {
 app.post('/api/recommend-cities', async (req, res) => {
     try {
         const { answers } = req.body;
-        if (!answers || !answers.group || !answers.vibe || !answers.budget) {
-            return res.status(400).json({ error: 'Missing required fields: group, vibe, budget.' });
+        if (!answers || !answers.group || !answers.vibe || !answers.budget || !answers.specialNeeds) {
+            return res.status(400).json({ error: 'Missing required fields: group, vibe, budget, specialNeeds.' });
         }
 
         const model = getGenAI().getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-        const prompt = `Act as an expert travel planner. Based on a ${answers.group} trip focusing on ${answers.vibe} with a ${answers.budget} budget, recommend 3 amazing cities or regions in the world.
+        const prompt = `Act as an expert travel planner. Based on a ${answers.group} trip focusing on ${answers.vibe} with a ${answers.budget} budget and ${answers.specialNeeds === 'None' ? 'no special dietary/medical needs' : answers.specialNeeds + ' requirements'}, recommend 3 amazing cities or regions in the world.
 Return ONLY a valid JSON object in this exact structure, no markdown:
 {
   "cities": [
@@ -61,7 +61,12 @@ Return ONLY a valid JSON object in this exact structure, no markdown:
       "name": "City Name, Country",
       "lat": 0.0000,
       "lng": 0.0000,
-      "reason": "A 1-sentence catchy reason why this fits their vibe perfectly."
+      "reason": "A 1-sentence catchy reason why this fits their vibe and constraints perfectly.",
+      "safety": {
+        "score": 85,
+        "solo_friendly": true,
+        "highlight": "A short note on safety, especially for solo or marginalized groups."
+      }
     }
   ]
 }`;
@@ -81,13 +86,15 @@ Return ONLY a valid JSON object in this exact structure, no markdown:
 app.post('/api/generate-itinerary', async (req, res) => {
     try {
         const { answers, cityName } = req.body;
-        if (!answers || !cityName) {
-            return res.status(400).json({ error: 'Missing required fields: answers, cityName.' });
+        if (!answers || !answers.group || !answers.vibe || !answers.budget || !answers.specialNeeds || !cityName) {
+            return res.status(400).json({ error: 'Missing required fields: answers (group, vibe, budget, specialNeeds), cityName.' });
         }
 
         const model = getGenAI().getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-        const prompt = `Act as an expert travel planner. Create a 3-day itinerary for a ${answers.group} trip to ${cityName} focusing on ${answers.vibe} with a ${answers.budget} budget. Return ONLY a valid JSON object in this exact structure, no markdown:
+        const prompt = `Act as an expert travel planner. Create a 3-day itinerary for a ${answers.group} trip to ${cityName} focusing on ${answers.vibe} with a ${answers.budget} budget.
+IMPORTANT CONSTRAINT: The user has ${answers.specialNeeds === 'None' ? 'no special dietary/medical needs' : 'STRICT ' + answers.specialNeeds + ' requirements'}. Every single restaurant and activity MUST accommodate this.
+Return ONLY a valid JSON object in this exact structure, no markdown:
 {
   "title": "A catchy trip title",
   "days": [
