@@ -42,8 +42,8 @@ export class ApiService {
     }
 
     static async fetchImage(keyword) {
-        // Use Unsplash Source — free, no API key, returns relevant images by keyword
-        const encodedKeyword = encodeURIComponent(keyword || 'travel');
-        return `https://source.unsplash.com/featured/800x500/?${encodedKeyword}`;
+        // Use Picsum Photos with keyword as seed — free, no API key, unique image per keyword
+        const seed = encodeURIComponent((keyword || 'travel').toLowerCase().replace(/\s+/g, '-'));
+        return `https://picsum.photos/seed/${seed}/800/500`;
     }
 }
