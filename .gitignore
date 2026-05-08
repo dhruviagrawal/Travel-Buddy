@@ -1,0 +1,14 @@
+# Environment variables — NEVER commit this
+.env
+.env.local
+.env.*.local
+
+# Node dependencies — always reinstalled via npm install
+node_modules/
+
+# macOS junk
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*

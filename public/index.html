@@ -6,8 +6,8 @@
     <title>Travel Buddy | Dynamic Trip Planner</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <!-- Leaflet CSS for Map -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <!-- Google Maps JS API (Replace YOUR_MAPS_API_KEY) -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACDALlRma8W6SljK5Il9T8w8dFhZhb3i8"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,10 +24,10 @@
             <header>
                 <h1 class="logo">Travel<span class="highlight">Buddy</span></h1>
             </header>
-            <div class="hero">
+            <div class="hero" role="region" aria-label="Hero Section">
                 <h2 class="title">Design Your Dream Trip. <br><span class="gradient-text">In Seconds.</span></h2>
                 <p class="subtitle">Personalized 3-day itineraries powered by AI, tailored to your exact vibe.</p>
-                <button id="start-btn" class="btn-primary">Start Planning</button>
+                <button id="start-btn" class="btn-primary" aria-label="Start Planning Quiz">Start Planning</button>
             </div>
         </section>
 
@@ -36,12 +36,12 @@
             <header>
                 <h1 class="logo">Travel<span class="highlight">Buddy</span></h1>
             </header>
-            <div class="quiz-container glass-card">
-                <div class="progress-bar">
+            <div class="quiz-container glass-card" role="region" aria-label="Quiz Questionnaire">
+                <div class="progress-bar" role="progressbar" aria-label="Quiz Progress">
                     <div class="progress" id="progress"></div>
                 </div>
-                <h3 id="question-text" class="question">Who's going on this trip?</h3>
-                <div id="options-container" class="options-grid">
+                <h3 id="question-text" class="question" aria-live="polite">Who's going on this trip?</h3>
+                <div id="options-container" class="options-grid" role="group" aria-label="Answer Options">
                     <!-- Options injected by JS -->
                 </div>
             </div>
@@ -81,8 +81,7 @@
         </section>
     </main>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Application Entry Point -->
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
