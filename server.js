@@ -68,22 +68,46 @@ const SAFETY_SETTINGS = [
 ];
 
 /**
- * Helper to handle Gemini API calls with automatic retry on rate limits (429).
- * Boosts reliability during high-traffic periods.
+ * Advanced Multi-Model Fallback & Retry System
+ * First tries high-limit models, then fallbacks to stable models.
+ * Automatically handles 429 (Rate Limit) with exponential backoff.
  */
-async function generateWithRetry(model, prompt, retries = 3) {
-    for (let i = 0; i < retries; i++) {
-        try {
-            return await model.generateContent(prompt);
-        } catch (error) {
-            const isRateLimit = error.status === 429 || (error.message && error.message.includes('429'));
-            if (isRateLimit && i < retries - 1) {
-                const waitTime = 2000 * (i + 1);
-                console.log(`Rate limit hit, retrying in ${waitTime}ms... (Attempt ${i + 1}/${retries})`);
-                await new Promise(resolve => setTimeout(resolve, waitTime));
-                continue;
+async function generateWithRetry(genAI, prompt, retries = 3) {
+    const models = ['gemini-1.5-flash', 'gemini-2.5-flash'];
+    
+    for (const modelName of models) {
+        const model = genAI.getGenerativeModel({ 
+            model: modelName,
+            systemInstruction: SYSTEM_INSTRUCTION,
+            safetySettings: SAFETY_SETTINGS
+        });
+
+        for (let i = 0; i < retries; i++) {
+            try {
+                return await model.generateContent(prompt);
+            } catch (error) {
+                const isRateLimit = error.status === 429 || (error.message && error.message.includes('429'));
+                const isNotFound = error.status === 404 || (error.message && error.message.includes('404'));
+                
+                if (isNotFound) {
+                    console.warn(`Model ${modelName} not found or unauthorized (404), trying next model...`);
+                    break; // Try the next model in the list
+                }
+                
+                if (isRateLimit && i < retries - 1) {
+                    const waitTime = 2000 * (i + 1);
+                    console.log(`Rate limit hit on ${modelName}, retrying in ${waitTime}ms... (Attempt ${i + 1}/${retries})`);
+                    await new Promise(resolve => setTimeout(resolve, waitTime));
+                    continue;
+                }
+                
+                // If it's the last model and we've exhausted retries, or it's a different error
+                if (modelName === models[models.length - 1]) throw error;
+                else {
+                    console.warn(`Model ${modelName} failed with ${error.status || 'error'}, falling back to next model.`);
+                    break; 
+                }
             }
-            throw error;
         }
     }
 }
@@ -112,12 +136,6 @@ app.post('/api/recommend-cities', async (req, res) => {
         // Backward compatibility for cached frontend clients
         answers.specialNeeds = answers.specialNeeds || 'None';
 
-        const model = getGenAI().getGenerativeModel({ 
-            model: 'gemini-2.5-flash',
-            systemInstruction: SYSTEM_INSTRUCTION,
-            safetySettings: SAFETY_SETTINGS
-        });
-
         const prompt = `Act as an expert travel planner. Based on a ${answers.group} trip focusing on ${answers.vibe} with a ${answers.budget} budget and ${answers.specialNeeds === 'None' ? 'no special dietary/medical needs' : 'STRICT ' + answers.specialNeeds + ' requirements'}, recommend 3 amazing cities or regions in the world.
 Return ONLY a valid JSON object in this exact structure, no markdown:
 {
@@ -136,7 +154,7 @@ Return ONLY a valid JSON object in this exact structure, no markdown:
   ]
 }`;
 
-        const result = await generateWithRetry(model, prompt);
+        const result = await generateWithRetry(getGenAI(), prompt);
         const textResponse = result.response.text();
         const jsonString = textResponse.replace(/```json\n?|\n?```/g, '');
         const cityData = JSON.parse(jsonString);
@@ -168,12 +186,6 @@ app.post('/api/generate-itinerary', async (req, res) => {
         // Backward compatibility for cached frontend clients
         answers.specialNeeds = answers.specialNeeds || 'None';
 
-        const model = getGenAI().getGenerativeModel({ 
-            model: 'gemini-2.5-flash',
-            systemInstruction: SYSTEM_INSTRUCTION,
-            safetySettings: SAFETY_SETTINGS
-        });
-
         const prompt = `Act as an expert travel planner. Create a 3-day itinerary for a ${answers.group} trip to ${cityName} focusing on ${answers.vibe} with a ${answers.budget} budget.
 IMPORTANT CONSTRAINT: The user has ${answers.specialNeeds === 'None' ? 'no special dietary/medical needs' : 'STRICT ' + answers.specialNeeds + ' requirements'}. Every single restaurant and activity MUST accommodate this.
 Return ONLY a valid JSON object in this exact structure, no markdown:
@@ -204,7 +216,7 @@ Return ONLY a valid JSON object in this exact structure, no markdown:
   ]
 }`;
 
-        const result = await generateWithRetry(model, prompt);
+        const result = await generateWithRetry(getGenAI(), prompt);
         const textResponse = result.response.text();
         const jsonString = textResponse.replace(/```json\n?|\n?```/g, '');
 
