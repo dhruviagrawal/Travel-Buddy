@@ -1,9 +1,15 @@
-FROM nginx:alpine
+FROM node:20-alpine
 
-# Copy all the static HTML/CSS/JS files to Nginx's default public folder
-COPY . /usr/share/nginx/html
+WORKDIR /app
 
-# Cloud Run defaults to port 8080, but we will explicitly tell it we use 80 during deployment
-EXPOSE 80
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm install --production
 
-CMD ["nginx", "-g", "daemon off;"]
+# Copy all source files
+COPY . .
+
+# Cloud Run injects PORT automatically
+EXPOSE 8080
+
+CMD ["node", "server.js"]
