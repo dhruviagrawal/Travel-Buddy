@@ -55,7 +55,7 @@ app.post('/api/recommend-cities', async (req, res) => {
         // Backward compatibility for cached frontend clients
         answers.specialNeeds = answers.specialNeeds || 'None';
 
-        const model = getGenAI().getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = getGenAI().getGenerativeModel({ model: 'gemini-2.5-flash' });
 
         const prompt = `Act as an expert travel planner. Based on a ${answers.group} trip focusing on ${answers.vibe} with a ${answers.budget} budget and ${answers.specialNeeds === 'None' ? 'no special dietary/medical needs' : 'STRICT ' + answers.specialNeeds + ' requirements'}, recommend 3 amazing cities or regions in the world.
 Return ONLY a valid JSON object in this exact structure, no markdown:
@@ -100,7 +100,7 @@ app.post('/api/generate-itinerary', async (req, res) => {
         // Backward compatibility for cached frontend clients
         answers.specialNeeds = answers.specialNeeds || 'None';
 
-        const model = getGenAI().getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = getGenAI().getGenerativeModel({ model: 'gemini-2.5-flash' });
 
         const prompt = `Act as an expert travel planner. Create a 3-day itinerary for a ${answers.group} trip to ${cityName} focusing on ${answers.vibe} with a ${answers.budget} budget.
 IMPORTANT CONSTRAINT: The user has ${answers.specialNeeds === 'None' ? 'no special dietary/medical needs' : 'STRICT ' + answers.specialNeeds + ' requirements'}. Every single restaurant and activity MUST accommodate this.
