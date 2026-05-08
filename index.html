@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Buddy | Dynamic Trip Planner</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Design Elements -->
+    <div class="background-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <main class="container">
+        <!-- Landing Section -->
+        <section id="landing" class="view active">
+            <header>
+                <h1 class="logo">Travel<span class="highlight">Buddy</span></h1>
+            </header>
+            <div class="hero">
+                <h2 class="title">Design Your Dream Trip. <br><span class="gradient-text">In Seconds.</span></h2>
+                <p class="subtitle">Personalized 3-day itineraries powered by AI, tailored to your exact vibe.</p>
+                <button id="start-btn" class="btn-primary">Start Planning</button>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section id="quiz" class="view">
+            <header>
+                <h1 class="logo">Travel<span class="highlight">Buddy</span></h1>
+            </header>
+            <div class="quiz-container glass-card">
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <h3 id="question-text" class="question">Who's going on this trip?</h3>
+                <div id="options-container" class="options-grid">
+                    <!-- Options injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Section -->
+        <section id="loading" class="view">
+            <div class="loader-container glass-card">
+                <div class="spinner"></div>
+                <h3 id="loading-text" class="gradient-text">Consulting our AI travel agents...</h3>
+            </div>
+        </section>
+
+        <!-- NEW: City Selection / Map Section -->
+        <section id="citySelection" class="view">
+            <header>
+                <h1 class="logo">Pick a <span class="highlight">Destination</span></h1>
+            </header>
+            <div class="map-layout">
+                <div id="map" class="map-container glass-card"></div>
+                <div id="city-list" class="city-list-container">
+                    <!-- City Cards Injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Result Section -->
+        <section id="result" class="view">
+            <header>
+                <h1 class="logo">Your <span class="highlight">Itinerary</span></h1>
+                <button id="restart-btn" class="btn-secondary">Plan Another</button>
+            </header>
+            <h2 id="itinerary-title" class="itinerary-main-title gradient-text"></h2>
+            <div id="itinerary-content" class="itinerary-grid">
+                <!-- Itinerary days injected by JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

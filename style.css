@@ -1,0 +1,434 @@
+:root {
+    --bg-color: #0A0A0A;
+    --text-color: #F0F0F0;
+    --primary-accent: #00F0FF;
+    --secondary-accent: #FF007F;
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* Background Orbs */
+.background-orbs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.5;
+    animation: float 20s infinite ease-in-out alternate;
+}
+
+.orb-1 {
+    width: 400px;
+    height: 400px;
+    background: var(--primary-accent);
+    top: -100px;
+    left: -100px;
+}
+
+.orb-2 {
+    width: 500px;
+    height: 500px;
+    background: var(--secondary-accent);
+    bottom: -150px;
+    right: -100px;
+    animation-delay: -5s;
+}
+
+.orb-3 {
+    width: 300px;
+    height: 300px;
+    background: #8A2BE2;
+    top: 40%;
+    left: 30%;
+    animation-delay: -10s;
+}
+
+@keyframes float {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(50px, 50px) scale(1.1); }
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.highlight {
+    color: var(--primary-accent);
+}
+
+.gradient-text {
+    background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* View Management */
+.view {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.view.active {
+    display: block;
+    opacity: 1;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Landing Section */
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 70vh;
+}
+
+.title {
+    font-size: 4.5rem;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    font-weight: 800;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #A0A0A0;
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+}
+
+/* Buttons */
+button {
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
+    color: white;
+    padding: 1rem 3rem;
+    box-shadow: 0 0 20px rgba(255, 0, 127, 0.4);
+    font-size: 1.3rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 0 30px rgba(255, 0, 127, 0.6);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-color);
+    padding: 0.8rem 1.5rem;
+    border: 1px solid var(--glass-border);
+}
+
+.btn-secondary:hover {
+    background: var(--card-bg);
+}
+
+/* Glass Card */
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 3rem;
+    margin: 3rem auto;
+    max-width: 800px;
+    text-align: center;
+}
+
+/* Quiz Section */
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
+    transition: width 0.3s ease;
+}
+
+.question {
+    font-size: 2.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.options-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.option-chip {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option-chip:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--primary-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 240, 255, 0.2);
+}
+
+/* Loader */
+.loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 40vh;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid rgba(255,255,255,0.1);
+    border-top-color: var(--primary-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 2rem;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+/* --- NEW: MAP & CITY SELECTION --- */
+.map-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+@media (min-width: 900px) {
+    .map-layout {
+        flex-direction: row;
+        height: 65vh;
+    }
+}
+
+.map-container {
+    flex: 1;
+    min-height: 400px;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    z-index: 1; /* Keep leaflet below modals but above background */
+    margin: 0;
+}
+
+/* Fix Leaflet overriding our dark theme text colors */
+.leaflet-container {
+    background: transparent;
+    font-family: 'Outfit', sans-serif;
+}
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+    background: rgba(10, 10, 10, 0.9);
+    color: var(--primary-accent);
+    border: 1px solid var(--primary-accent);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+}
+
+.city-list-container {
+    flex: 0 0 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Custom Scrollbar */
+.city-list-container::-webkit-scrollbar {
+    width: 6px;
+}
+.city-list-container::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+}
+.city-list-container::-webkit-scrollbar-thumb {
+    background: var(--secondary-accent);
+    border-radius: 10px;
+}
+
+.city-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.city-card:hover {
+    border-color: var(--primary-accent);
+    transform: translateX(-5px);
+    box-shadow: -5px 5px 15px rgba(0, 240, 255, 0.1);
+}
+
+.city-name {
+    font-size: 1.5rem;
+    color: var(--primary-accent);
+    margin-bottom: 0.5rem;
+}
+
+.city-reason {
+    font-size: 0.95rem;
+    color: #CCC;
+    margin-bottom: 1.2rem;
+    line-height: 1.4;
+}
+
+.btn-select-city {
+    width: 100%;
+    background: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--primary-accent);
+    padding: 0.6rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.city-card:hover .btn-select-city {
+    background: var(--primary-accent);
+    color: #000;
+}
+
+
+/* Results */
+.itinerary-main-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+.itinerary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+}
+
+.day-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.day-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border-color: rgba(255,0,127,0.3);
+}
+
+.day-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.day-content {
+    padding: 1.5rem;
+}
+
+.day-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-accent);
+}
+
+.day-desc {
+    color: #CCC;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.activity-list {
+    list-style: none;
+}
+
+.activity-list li {
+    margin-bottom: 0.5rem;
+    position: relative;
+    padding-left: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.activity-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--secondary-accent);
+}
