@@ -22,7 +22,7 @@ test('POST /api/recommend-cities: returns 400 if answers are missing', async () 
 test('POST /api/recommend-cities: returns 400 if answers fields are incomplete', async () => {
     const res = await request(app)
         .post('/api/recommend-cities')
-        .send({ answers: { group: 'Solo', vibe: 'Beaches', budget: 'Comfort' } }); // missing specialNeeds
+        .send({ answers: { group: 'Solo' } }); // missing vibe and budget
     assert.strictEqual(res.status, 400);
     assert.ok(res.body.error);
 });
@@ -30,7 +30,7 @@ test('POST /api/recommend-cities: returns 400 if answers fields are incomplete',
 test('POST /api/generate-itinerary: returns 400 if cityName is missing', async () => {
     const res = await request(app)
         .post('/api/generate-itinerary')
-        .send({ answers: { group: 'Solo', vibe: 'Beaches', budget: 'Comfort', specialNeeds: 'Vegan' } });
+        .send({ answers: { group: 'Solo', vibe: 'Beaches', budget: 'Comfort' } });
     assert.strictEqual(res.status, 400);
     assert.ok(res.body.error);
 });

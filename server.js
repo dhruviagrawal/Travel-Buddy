@@ -48,13 +48,16 @@ app.get('/api/config', (req, res) => {
 app.post('/api/recommend-cities', async (req, res) => {
     try {
         const { answers } = req.body;
-        if (!answers || !answers.group || !answers.vibe || !answers.budget || !answers.specialNeeds) {
-            return res.status(400).json({ error: 'Missing required fields: group, vibe, budget, specialNeeds.' });
+        if (!answers || !answers.group || !answers.vibe || !answers.budget) {
+            return res.status(400).json({ error: 'Missing required fields: group, vibe, budget.' });
         }
+        
+        // Backward compatibility for cached frontend clients
+        answers.specialNeeds = answers.specialNeeds || 'None';
 
         const model = getGenAI().getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-        const prompt = `Act as an expert travel planner. Based on a ${answers.group} trip focusing on ${answers.vibe} with a ${answers.budget} budget and ${answers.specialNeeds === 'None' ? 'no special dietary/medical needs' : answers.specialNeeds + ' requirements'}, recommend 3 amazing cities or regions in the world.
+        const prompt = `Act as an expert travel planner. Based on a ${answers.group} trip focusing on ${answers.vibe} with a ${answers.budget} budget and ${answers.specialNeeds === 'None' ? 'no special dietary/medical needs' : 'STRICT ' + answers.specialNeeds + ' requirements'}, recommend 3 amazing cities or regions in the world.
 Return ONLY a valid JSON object in this exact structure, no markdown:
 {
   "cities": [
@@ -87,9 +90,12 @@ Return ONLY a valid JSON object in this exact structure, no markdown:
 app.post('/api/generate-itinerary', async (req, res) => {
     try {
         const { answers, cityName } = req.body;
-        if (!answers || !answers.group || !answers.vibe || !answers.budget || !answers.specialNeeds || !cityName) {
-            return res.status(400).json({ error: 'Missing required fields: answers (group, vibe, budget, specialNeeds), cityName.' });
+        if (!answers || !answers.group || !answers.vibe || !answers.budget || !cityName) {
+            return res.status(400).json({ error: 'Missing required fields: answers (group, vibe, budget), cityName.' });
         }
+        
+        // Backward compatibility for cached frontend clients
+        answers.specialNeeds = answers.specialNeeds || 'None';
 
         const model = getGenAI().getGenerativeModel({ model: 'gemini-2.5-flash' });
 
