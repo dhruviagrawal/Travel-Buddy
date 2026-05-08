@@ -11,13 +11,14 @@ export class ApiService {
             });
 
             if (!response.ok) {
-                throw new Error("Backend failed to fetch cities.");
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || "Backend failed to fetch cities.");
             }
 
             return await response.json();
         } catch (error) {
             console.error("Fetch Error:", error);
-            alert("Failed to connect to the backend. Ensure you have added the API keys and the server is running.");
+            alert(error.message || "Failed to connect to the backend. Ensure you have added the API keys and the server is running.");
             return [];
         }
     }
@@ -31,12 +32,14 @@ export class ApiService {
             });
 
             if (!response.ok) {
-                throw new Error("Backend failed to generate itinerary.");
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || "Backend failed to generate itinerary.");
             }
 
             return await response.json();
         } catch (error) {
             console.error("Fetch Error:", error);
+            alert(error.message || "Failed to connect to the backend.");
             return null;
         }
     }
