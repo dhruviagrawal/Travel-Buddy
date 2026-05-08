@@ -42,19 +42,8 @@ export class ApiService {
     }
 
     static async fetchImage(keyword) {
-        if (CONFIG.UNSPLASH_ACCESS_KEY === "YOUR_UNSPLASH_ACCESS_KEY") {
-            return `https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`;
-        }
-
-        try {
-            const imgRes = await fetch(`https://api.unsplash.com/photos/random?query=${encodeURIComponent(keyword)}&orientation=landscape&client_id=${CONFIG.UNSPLASH_ACCESS_KEY}`);
-            if (imgRes.ok) {
-                const imgData = await imgRes.json();
-                return imgData.urls.regular;
-            }
-        } catch (error) {
-            console.error("Unsplash Error:", error);
-        }
-        return `https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`;
+        // Use Unsplash Source — free, no API key, returns relevant images by keyword
+        const encodedKeyword = encodeURIComponent(keyword || 'travel');
+        return `https://source.unsplash.com/featured/800x500/?${encodedKeyword}`;
     }
 }
