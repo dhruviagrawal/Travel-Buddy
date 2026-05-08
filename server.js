@@ -26,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 }));
 
 // Rate limiting — prevent API abuse (security boost)
+app.set('trust proxy', 1); // Cloud Run acts as a reverse proxy
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 30, // max 30 requests per window per IP
